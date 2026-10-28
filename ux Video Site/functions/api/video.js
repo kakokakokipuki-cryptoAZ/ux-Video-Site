@@ -1,5 +1,5 @@
-// パスワード「1ichimilu4」のSHA-256ハッシュ値（コード内にパスワードを直接残さないための暗号化文字列）
-const CORRECT_PASSWORD_HASH = "815615d6666ba81ecb0625da651ca995d2c2079a0b12bc129037c784414cb35c";
+// 【修正済】パスワード「1ichimilu4」の正しいSHA-256ハッシュ値
+const CORRECT_PASSWORD_HASH = "56832dbb9ea979a4da9b736b00b06fe1d1e43477174db7667d4fef5ba83c27e0";
 
 // パスワードをハッシュ化する関数
 async function sha256(message) {
