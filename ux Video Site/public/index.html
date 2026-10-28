@@ -21,45 +21,36 @@
         <h2>パスワードを入力してください</h2>
         <input type="password" id="passwordInput" placeholder="パスワードを入力">
         <br>
-        <button onclick="loadVideo()">送信</button>
+        <button onclick="checkPassword()">送信</button>
         <p class="error" id="errorMsg">パスワードが正しくありません。</p>
     </div>
 
     <div id="videoContainer">
-        <!-- controlsList="nodownload" でブラウザの標準ダウンロードボタンを非表示に -->
+        <!-- 動画の直リンクコピーを防ぐため、ダウンロードボタンを非表示に -->
         <video id="myVideo" controls controlsList="nodownload">
             お使いのブラウザは動画タグをサポートしていません。
         </video>
     </div>
 
     <script>
-        async function loadVideo() {
+        function checkPassword() {
             const password = document.getElementById("passwordInput").value;
             const errorMsg = document.getElementById("errorMsg");
             const videoElement = document.getElementById("myVideo");
 
-            try {
-                // サーバー側（Functions）にパスワードを送信して動画データをリクエスト
-                const response = await fetch('/api/video', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ password: password })
-                });
-
-                if (!response.ok) throw new Error('認証失敗');
-
-                // 取得した動画のバイナリデータをブラウザ内の一時的なメモリURL（Blob）に変換
-                const videoBlob = await response.blob();
-                const videoUrl = URL.createObjectURL(videoBlob);
-
-                // 画面を切り替えて動画をセット＆再生
+            // 【設定】ここにパスワードを直接書き込みます！
+            if (password === "1ichimilu4") {
+                // パスワードが合っていたら画面を切り替える
                 document.getElementById("loginForm").style.display = "none";
                 document.getElementById("videoContainer").style.display = "block";
-                
-                videoElement.src = videoUrl;
-                videoElement.play();
 
-            } catch (error) {
+                // 【設定】動画ファイルの場所を指定（index.htmlから見た位置）
+                // 先ほどの構成のままであれば、1つ上の階層のvideosフォルダにあるsecret.mp4を読み込みます
+                videoElement.src = "../videos/secret.mp4"; 
+                videoElement.load();
+                videoElement.play();
+            } else {
+                // 間違っていたらエラーを出す
                 errorMsg.style.display = "block";
             }
         }
