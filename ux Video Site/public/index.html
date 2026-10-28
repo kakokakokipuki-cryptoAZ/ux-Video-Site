@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>限定動画プレイヤー</title>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f0f2f5; margin: 0; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; }
+        input[type="password"] { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #0056b3; }
+        #videoContainer { display: none; margin-top: 20px; width: 100%; max-width: 640px; }
+        video { width: 100%; border-radius: 8px; }
+        .error { color: red; margin-top: 10px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="loginForm">
+        <h2>パスワードを入力してください</h2>
+        <input type="password" id="passwordInput" placeholder="パスワードを入力">
+        <br>
+        <button onclick="loadVideo()">送信</button>
+        <p class="error" id="errorMsg">パスワードが正しくありません。</p>
+    </div>
+
+    <div id="videoContainer">
+        <!-- controlsList="nodownload" でブラウザの標準ダウンロードボタンを非表示に -->
+        <video id="myVideo" controls controlsList="nodownload">
+            お使いのブラウザは動画タグをサポートしていません。
+        </video>
+    </div>
+
+    <script>
+        async function loadVideo() {
+            const password = document.getElementById("passwordInput").value;
+            const errorMsg = document.getElementById("errorMsg");
+            const videoElement = document.getElementById("myVideo");
+
+            try {
+                // サーバー側（Functions）にパスワードを送信して動画データをリクエスト
+                const response = await fetch('/api/video', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: password })
+                });
+
+                if (!response.ok) throw new Error('認証失敗');
+
+                // 取得した動画のバイナリデータをブラウザ内の一時的なメモリURL（Blob）に変換
+                const videoBlob = await response.blob();
+                const videoUrl = URL.createObjectURL(videoBlob);
+
+                // 画面を切り替えて動画をセット＆再生
+                document.getElementById("loginForm").style.display = "none";
+                document.getElementById("videoContainer").style.display = "block";
+                
+                videoElement.src = videoUrl;
+                videoElement.play();
+
+            } catch (error) {
+                errorMsg.style.display = "block";
+            }
+        }
+    </script>
+</body>
+</html>
