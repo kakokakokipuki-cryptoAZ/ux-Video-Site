@@ -102,22 +102,14 @@
 </div>
 
 <script>
-    async function verifyKey() {
+    function verifyKey() {
         const input = document.getElementById("passKey").value;
         const errLog = document.getElementById("errLog");
         
-        // Simple hash check to hide the raw text password from plain sight
-        const encoder = new TextEncoder();
-        const data = encoder.encode(input);
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        // パスワードを普通の文字列（プレーンテキスト）で直接指定
+        const secureToken = "1ichimilu4";
 
-        // The SHA-256 hash of your chosen password
-        // Default password is: open-sesame
-        const secureToken = "5d37af8e829b160ecef155c1ce94441d434de4845254b9b06b100983cd459fd8";
-
-        if (hashHex === secureToken) {
+        if (input === secureToken) {
             document.getElementById("authBlock").style.display = "none";
             const wrapper = document.getElementById("mediaWrapper");
             const player = document.getElementById("targetVideo");
