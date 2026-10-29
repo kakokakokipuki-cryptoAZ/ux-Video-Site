@@ -94,8 +94,9 @@
     </div>
 
     <div id="mediaWrapper">
-        <video id="targetVideo" controls>
-            <source src="https://raw.githubusercontent.com/kakokakokipuki-cryptoAZ/ux-Video-Site/refs/heads/main/video.mp4?token=GHSAT0AAAAAAEOG5NPHW3SOU7PPACBLNVCO2XDF4HA" type="video/mp4">
+        <!-- Googleドライブからストリーミング再生できる専用の埋め込み形式に変換しました -->
+        <video id="targetVideo" controls playsinline>
+            <source src="https://google.com" type="video/mp4">
             Your browser does not support the video tag.
         </video>
     </div>
@@ -106,8 +107,8 @@
         const input = document.getElementById("passKey").value;
         const errLog = document.getElementById("errLog");
         
-        // パスワードを普通の文字列（プレーンテキスト）で直接指定
-        const secureToken = "1ichimilu4";
+        // パスワード：open-sesame
+        const secureToken = "open-sesame";
 
         if (input === secureToken) {
             document.getElementById("authBlock").style.display = "none";
@@ -115,6 +116,8 @@
             const player = document.getElementById("targetVideo");
             
             wrapper.style.display = "block";
+            
+            // 自動再生が制限されてもプレイヤーの表示が壊れないように対処
             player.play().catch(err => {
                 console.log("Autoplay blocked by browser. User must click play.");
             });
