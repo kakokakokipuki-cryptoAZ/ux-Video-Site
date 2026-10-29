@@ -3,55 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>限定動画プレイヤー</title>
+    <title>Video Player</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #f0f2f5; margin: 0; }
-        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 100%; }
-        input[type="password"] { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
-        button { padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background-color: #0056b3; }
-        #videoContainer { display: none; margin-top: 20px; width: 100%; max-width: 640px; }
-        video { width: 100%; border-radius: 8px; }
-        .error { color: red; margin-top: 10px; display: none; }
+        html, body {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: #000; font-family: sans-serif; overflow: hidden;
+        }
+        #login-screen {
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            width: 100%; height: 100%; color: #fff;
+        }
+        input, button { padding: 12px 20px; font-size: 16px; margin: 8px; border: none; border-radius: 4px; }
+        input { width: 200px; }
+        button { background: #333; color: #fff; cursor: pointer; }
+        button:hover { background: #555; }
+        #my-video { display: none; width: 100%; height: 100%; object-fit: contain; }
     </style>
 </head>
 <body>
 
-    <div class="container" id="loginForm">
-        <h2>パスワードを入力してください</h2>
-        <input type="password" id="passwordInput" placeholder="パスワードを入力">
-        <br>
-        <button onclick="checkPassword()">送信</button>
-        <p class="error" id="errorMsg">パスワードが正しくありません。</p>
+    <!-- ログイン画面 -->
+    <div id="login-screen">
+        <input type="password" id="pass-input" placeholder="パスワードを入力">
+        <button onclick="verifyPassword()">再生</button>
     </div>
 
-    <div id="videoContainer">
-        <!-- 動画の直リンクコピーを防ぐため、ダウンロードボタンを非表示に -->
-        <video id="myVideo" controls controlsList="nodownload">
-            お使いのブラウザは動画タグをサポートしていません。
-        </video>
-    </div>
+    <!-- 動画要素（最初は非表示） -->
+    <video id="my-video" controls controlsList="nodownload"></video>
 
     <script>
-        function checkPassword() {
-            const password = document.getElementById("passwordInput").value;
-            const errorMsg = document.getElementById("errorMsg");
-            const videoElement = document.getElementById("myVideo");
+        async function verifyPassword() {
+            const password = document.getElementById("pass-input").value;
+            if (!password) return alert("パスワードを入力してください");
 
-            // 【設定】ここにパスワードを直接書き込みます！
-            if (password === "1ichimilu4") {
-                // パスワードが合っていたら画面を切り替える
-                document.getElementById("loginForm").style.display = "none";
-                document.getElementById("videoContainer").style.display = "block";
+            const video = document.getElementById("my-video");
+            const loginScreen = document.getElementById("login-screen");
 
-                // 【設定】動画ファイルの場所を指定（index.htmlから見た位置）
-                // 先ほどの構成のままであれば、1つ上の階層のvideosフォルダにあるsecret.mp4を読み込みます
-                videoElement.src = "../videos/secret.mp4"; 
-                videoElement.load();
-                videoElement.play();
-            } else {
-                // 間違っていたらエラーを出す
-                errorMsg.style.display = "block";
+            // FunctionsのAPI（/api/video）に対してパスワードを送信して動画を取得
+            // ※「secret.mp4」を固定で読み出すようにします
+            const videoUrl = `/api/video?password=${encodeURIComponent(password)}&name=secret.mp4`;
+            
+            // あらかじめ要素のソースにセット
+            video.src = videoUrl;
+
+            // 動画の読み込みと再生を試みる
+            try {
+                await video.play();
+                
+                // 再生が成功したら画面を切り替えてフルスクリーンにする
+                loginScreen.style.display = "none";
+                video.style.display = "block";
+
+                if (video.requestFullscreen) {
+                    video.requestFullscreen();
+                } else if (video.webkitRequestFullscreen) {
+                    video.webkitRequestFullscreen(); // Safari用
+                }
+            } catch (error) {
+                // パスワードが違う場合やエラーの時は再生に失敗する
+                alert("パスワードが違います、または動画を再生できません。");
+                video.src = "";
             }
         }
     </script>
