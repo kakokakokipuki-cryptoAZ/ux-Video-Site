@@ -65,12 +65,21 @@
         #mediaWrapper {
             display: none;
             margin-top: 1.5rem;
-        }
-        video {
-            width: 100%;
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 の画面比率を維持 */
+            height: 0;
+            overflow: hidden;
             border-radius: 6px;
             border: 1px solid #27272a;
             background: #000;
+        }
+        #mediaWrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
         }
         .error-text {
             color: #ef4444;
@@ -94,11 +103,7 @@
     </div>
 
     <div id="mediaWrapper">
-        <!-- preload="none" にして、認証前にGoogleドライブと通信させないようにしました -->
-        <video id="targetVideo" controls playsinline preload="none">
-            <source src="https://google.com" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
+        <iframe src="https://google.com" allow="autoplay"></iframe>
     </div>
 </div>
 
@@ -107,15 +112,12 @@
         const input = document.getElementById("passKey").value;
         const errLog = document.getElementById("errLog");
         
-        // パスワードは「open-sesame」です
+        // パスワードを新しく指定された「1ichimilu4」に設定しました
         const secureToken = "1ichimilu4";
 
         if (input === secureToken) {
-            // パスワードが合っていたら、即座に画面を切り替える（最優先処理）
             document.getElementById("authBlock").style.display = "none";
             document.getElementById("mediaWrapper").style.display = "block";
-            
-            // エラーを引き起こしていた自動再生命令（.play()）を完全にカットしました
         } else {
             errLog.textContent = "Invalid passcode. Access denied.";
             document.getElementById("passKey").value = "";
