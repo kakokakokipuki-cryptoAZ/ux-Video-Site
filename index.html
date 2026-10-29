@@ -94,8 +94,8 @@
     </div>
 
     <div id="mediaWrapper">
-        <!-- Googleドライブからストリーミング再生できる専用の埋め込み形式に変換しました -->
-        <video id="targetVideo" controls playsinline>
+        <!-- preload="none" にして、認証前にGoogleドライブと通信させないようにしました -->
+        <video id="targetVideo" controls playsinline preload="none">
             <source src="https://google.com" type="video/mp4">
             Your browser does not support the video tag.
         </video>
@@ -107,20 +107,15 @@
         const input = document.getElementById("passKey").value;
         const errLog = document.getElementById("errLog");
         
-        // パスワード：open-sesame
+        // パスワードは「open-sesame」です
         const secureToken = "open-sesame";
 
         if (input === secureToken) {
+            // パスワードが合っていたら、即座に画面を切り替える（最優先処理）
             document.getElementById("authBlock").style.display = "none";
-            const wrapper = document.getElementById("mediaWrapper");
-            const player = document.getElementById("targetVideo");
+            document.getElementById("mediaWrapper").style.display = "block";
             
-            wrapper.style.display = "block";
-            
-            // 自動再生が制限されてもプレイヤーの表示が壊れないように対処
-            player.play().catch(err => {
-                console.log("Autoplay blocked by browser. User must click play.");
-            });
+            // エラーを引き起こしていた自動再生命令（.play()）を完全にカットしました
         } else {
             errLog.textContent = "Invalid passcode. Access denied.";
             document.getElementById("passKey").value = "";
