@@ -14,16 +14,18 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            overflow: hidden;
         }
         .card {
             background: #18181b;
             padding: 2.5rem;
             border-radius: 12px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            max-width: 720px;
+            max-width: 480px;
             width: 90%;
             text-align: center;
             border: 1px solid #27272a;
+            z-index: 10;
         }
         h2 {
             margin-top: 0;
@@ -40,7 +42,7 @@
             border-radius: 6px;
             background: #0f0f11;
             color: #ffffff;
-            width: 240px;
+            width: 200px;
             outline: none;
             transition: border-color 0.2s;
         }
@@ -62,49 +64,48 @@
         button:hover {
             background-color: #1d4ed8;
         }
-        #mediaWrapper {
-            display: none;
-            margin-top: 1.5rem;
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 の画面比率を維持 */
-            height: 0;
-            overflow: hidden;
-            border-radius: 6px;
-            border: 1px solid #27272a;
-            background: #000;
-        }
-        #mediaWrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
         .error-text {
             color: #ef4444;
             margin-top: 10px;
             font-size: 14px;
             min-height: 20px;
         }
+
+        /* フルスクリーンプレイヤー用のCSS（Googleドライブのiframeは削除しました） */
+        #mediaWrapper {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #000000;
+            z-index: 999;
+        }
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div id="authBlock">
-        <h2>パスワード入力</h2>
-        <p style="color: #a1a1aa; font-size: 14px;"></p>
-        <div class="input-group">
-            <input type="password" id="passKey" placeholder="Enter key...">
-            <button onclick="verifyKey()">Unlock</button>
-        </div>
-        <div id="errLog" class="error-text"></div>
+<div class="card" id="authBlock">
+    <h2>パスワード入力</h2>
+    <div class="input-group">
+        <input type="password" id="passKey" placeholder="Enter key...">
+        <button onclick="verifyKey()">Unlock</button>
     </div>
+    <div id="errLog" class="error-text"></div>
+</div>
 
-    <div id="mediaWrapper">
-        <iframe src="https://google.com" allow="autoplay"></iframe>
-    </div>
+<div id="mediaWrapper">
+    <!-- 同じフォルダにある video.mp4 を直接再生します -->
+    <video id="targetVideo" controls playsinline preload="auto">
+        <source src="video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 </div>
 
 <script>
@@ -112,12 +113,28 @@
         const input = document.getElementById("passKey").value;
         const errLog = document.getElementById("errLog");
         
-        // パスワードを新しく指定された「1ichimilu4」に設定しました
+        // パスワード：1ichimilu4
         const secureToken = "1ichimilu4";
 
         if (input === secureToken) {
             document.getElementById("authBlock").style.display = "none";
-            document.getElementById("mediaWrapper").style.display = "block";
+            const wrapper = document.getElementById("mediaWrapper");
+            const player = document.getElementById("targetVideo");
+            
+            wrapper.style.display = "block";
+            
+            // 強制フルスクリーン化
+            if (wrapper.requestFullscreen) {
+                wrapper.requestFullscreen();
+            } else if (wrapper.webkitRequestFullscreen) {
+                wrapper.webkitRequestFullscreen();
+            }
+
+            // 再生開始
+            player.play().catch(err => {
+                console.log("Autoplay blocked. User action required.");
+            });
+            
         } else {
             errLog.textContent = "Invalid passcode. Access denied.";
             document.getElementById("passKey").value = "";
