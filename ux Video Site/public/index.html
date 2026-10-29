@@ -33,7 +33,7 @@
 
     <script>
         async function verifyPassword() {
-            const password = document.getElementById("pass-input").value;
+            const password = document.getElementById("pass-input").value.trim(); // .trim() をつけて空白を自動消去する
             if (!password) return alert("パスワードを入力してください");
 
             const video = document.getElementById("my-video");
