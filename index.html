@@ -71,7 +71,7 @@
             min-height: 20px;
         }
 
-        /* フルスクリーンプレイヤー用のCSS（Googleドライブのiframeは削除しました） */
+        /* フルスクリーンプレイヤー用のCSS */
         #mediaWrapper {
             display: none;
             position: fixed;
@@ -101,13 +101,11 @@
 </div>
 
 <div id="mediaWrapper">
-    <!-- 同じフォルダにある video.mp4 を直接再生します -->
-<video id="targetVideo" controls playsinline preload="auto">
-    <!-- 下の「あなたのGitHubユーザー名」と「リポジトリ名」を実際の文字に書き換えてください -->
-    <source src="https://github.io" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
-
+    <!-- Filebinのストリーミング用直リンクを設定しました -->
+    <video id="targetVideo" controls playsinline preload="auto">
+        <source src="https://filebin.net" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
 </div>
 
 <script>
